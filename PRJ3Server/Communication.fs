@@ -25,7 +25,8 @@ type ProgramState =
   }
 
 let Serialize i x =
-  Array.concat [|[|(byte i)|];(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(x)))|]
+  Array.concat [|[|(byte i)|];(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(x)))|] //stick a byte with the question number in front to you can read that byte and deserialize the data properly
+  //this is probably not even necessary
 
 let BootProgram (settings : Settings) =
   let serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
