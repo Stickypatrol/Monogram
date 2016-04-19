@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRJ3Client", "Monogram\PRJ3Client.fsproj", "{884032CA-09E1-425D-AB97-34BBE56B5910}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "PRJ3Server", "PRJ3Server\PRJ3Server.fsproj", "{34D1D5C5-F790-4B0C-ACC7-2292F47CEDA2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{F55C8B92-34D0-474A-A752-C0282DE7C276}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\Desktop\Fahrradgaragen_in_Rotterdam.JPG = ..\..\..\Desktop\Fahrradgaragen_in_Rotterdam.JPG
+		..\..\..\..\..\Jef\MAMP\htdocs\Snips\Knipsel1.PNG = ..\..\..\..\..\Jef\MAMP\htdocs\Snips\Knipsel1.PNG
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
