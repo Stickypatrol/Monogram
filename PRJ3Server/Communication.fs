@@ -24,8 +24,8 @@ type ProgramState =
     ClientSockets : List<Socket>
   }
 
-let Serialize x =
-  Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(x))
+let Serialize i x =
+  Array.concat [|[|(byte i)|];(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(x)))|]
 
 let BootProgram (settings : Settings) =
   let serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
@@ -89,13 +89,13 @@ let WriteSentData (socket:Socket) dbConnection =
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
-  //| "1" -> socket.Send(Serialize (dbConnection))
-  | "2" ->  let x = Serialize (q2 dbConnection)//i'm sending data in Byte[] JSON format to the client here
+  | "1" -> socket.Send(Serialize (q1 1dbConnection))
+  | "2" ->  let x = Serialize 2 (q2 dbConnection)//i'm sending data in Byte[] JSON format to the client here
             printfn "%A" x
             ignore <| socket.Send(x)
-  | "3" -> ignore <| socket.Send(Serialize (q3 dbConnection))
-  | "4" -> ignore <| socket.Send(Serialize (q4 dbConnection))
-  | _ -> ignore <| socket.Send(Serialize (q5 dbConnection))
+  | "3" -> ignore <| socket.Send(Serialize 3 (q3 dbConnection))
+  | "4" -> ignore <| socket.Send(Serialize 4 (q4 dbConnection))
+  | _ -> ignore <| socket.Send(Serialize 5 (q5 dbConnection))
   | _ -> failwith "not yet implemented"
   let _ = (socket.Blocking = false)
   ()
