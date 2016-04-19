@@ -24,8 +24,8 @@ type ProgramState =
     ClientSockets : List<Socket>
   }
 
-let Serialize (x:List<string* string>) =
-  JsonConvert.SerializeObject(x)
+let Serialize (x:List<string* int>) =
+  Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(x))
 
 let BootProgram (settings : Settings) =
   let serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
@@ -50,8 +50,11 @@ let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
       select row
     }
   let y =
-    x |> Seq.fold (fun s x -> if (List.exists (fun y -> y) s) then x.::s else x::s) []
-  dbConnection.Thefts
+    x |> Seq.fold (fun s x -> match Map.tryFind x.Date s with
+                              | Some(v) -> Map.add x.Date (v+1) s
+                              | None -> Map.add x.Date 1 s) Map.empty
+  let z = Map.toList y
+  z
 
 let WriteSentData (socket:Socket) (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   let buffer = Array.create socket.Available (new Byte())
@@ -60,13 +63,13 @@ let WriteSentData (socket:Socket) (dbConnection:dbSchema.ServiceTypes.SimpleData
   printfn "request received is for question %A" questiontype
   match questiontype with
   //| "1" -> socket.Send(Serialize (dbConnection))
-  | "2" -> socket.Send(Serialize (q2 dbConnection))
-  | "3" -> socket.Send(Serialize ())
-  | "4" -> socket.Send(Serialize ())
-  | _ -> socket.Send(Serialize ())
-  let x = Console.ReadLine()
-  let y = Encoding.ASCII.GetBytes(x)
-  ignore <| socket.Send(y)
+  | "2" ->  let x = Serialize (q2 dbConnection)
+            printfn "%A" x
+            ignore <| socket.Send(x)
+  //| "3" -> socket.Send(Serialize (q3 dbConnection))
+  //| "4" -> socket.Send(Serialize (q4 dbConnection))
+  //| _ -> socket.Send(Serialize (q5 dbConnection))
+  | _ -> failwith "not yet implemented"
   let _ = (socket.Blocking = false)
   ()
 

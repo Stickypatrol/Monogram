@@ -1,4 +1,4 @@
-﻿module Communicatie
+﻿module Communication
 
 open System
 open System.Net
@@ -8,7 +8,7 @@ open System.Text
 
 let localip = IPAddress.Parse "145.24.221.121"
 
-let BootClient =
+let BootClient() =
   let clientSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
   printfn "clientsocket has been initialized"
   clientSocket//clientsocket is connected
@@ -19,7 +19,7 @@ let rec TryConnect (clientSocket : Socket) (connectIP : IPAddress) =
       printfn "clientsocket is attempting connection..."
       clientSocket.Connect(IPEndPoint(connectIP, 8888))
     with
-      | err -> printfn "an error ocured, this one: %A" err
+      | err -> printfn "an error occurred, this one: %A" err
   else
     printfn "no connection available"
   clientSocket
@@ -38,12 +38,8 @@ let rec TrySendData (clientSocket:Socket) =
   ()
 
 //THE ACTUAL PROGRAM
-let clientSocket = BootClient
-
 let rec MainClientLoop (clientSocket:Socket) =
   let clientSocket' = TryConnect clientSocket localip
   if clientSocket'.Poll(1000, SelectMode.SelectWrite) then
     TrySendData clientSocket'
   MainClientLoop clientSocket'
-
-do MainClientLoop clientSocket
