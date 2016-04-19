@@ -6,7 +6,7 @@ open System.Net.Sockets
 open System.Text
 
 
-let localip = IPAddress.Parse "145.24.221.121"
+let localip = IPAddress.Parse "145.24.200.232"
 
 let BootClient() =
   let clientSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
