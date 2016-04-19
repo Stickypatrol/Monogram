@@ -22,7 +22,7 @@ type ProgramState =
     ClientSockets : List<Socket>
   }
 
-let Serialize x =
+//let Serialize x =
   
 
 let BootProgram (settings : Settings) =
@@ -47,7 +47,7 @@ let WriteSentData (socket:Socket) =
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
-  | 1 -> //hier moeten de queries komen te staan d.m.v. het vraagnummer dat je binnenkrijgt
+  | _ -> //hier moeten de queries komen te staan d.m.v. het vraagnummer dat je binnenkrijgt
   let x = Console.ReadLine()
   let y = Encoding.ASCII.GetBytes(x)
   ignore <| socket.Send(y)
