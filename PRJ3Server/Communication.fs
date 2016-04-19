@@ -9,6 +9,8 @@ open FSharp.Charting.ChartTypes
 open System.Drawing
 open System.Windows.Forms
 open CoroutineMonad
+open Newtonsoft.Json
+open AuxTypes
 
 type Settings =
   {
@@ -22,8 +24,8 @@ type ProgramState =
     ClientSockets : List<Socket>
   }
 
-//let Serialize x =
-  
+let Serialize (x:List<string* string>) =
+  JsonConvert.SerializeObject(x)
 
 let BootProgram (settings : Settings) =
   let serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
@@ -41,13 +43,27 @@ let rec connectClient (serverSocket:Socket) =
   else
     connectClient serverSocket
 
-let WriteSentData (socket:Socket) =
+let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+  let x =
+    query{
+      for row in dbConnection.Thefts do
+      select row
+    }
+  let y =
+    x |> Seq.fold (fun s x -> if (List.exists (fun y -> y) s) then x.::s else x::s) []
+  dbConnection.Thefts
+
+let WriteSentData (socket:Socket) (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   let buffer = Array.create socket.Available (new Byte())
   let _ = socket.Receive(buffer)
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
-  | _ -> //hier moeten de queries komen te staan d.m.v. het vraagnummer dat je binnenkrijgt
+  //| "1" -> socket.Send(Serialize (dbConnection))
+  | "2" -> socket.Send(Serialize (q2 dbConnection))
+  | "3" -> socket.Send(Serialize ())
+  | "4" -> socket.Send(Serialize ())
+  | _ -> socket.Send(Serialize ())
   let x = Console.ReadLine()
   let y = Encoding.ASCII.GetBytes(x)
   ignore <| socket.Send(y)
@@ -59,7 +75,7 @@ let CreateSettings () = {LocalIP = (IPAddress.Parse (Console.ReadLine())); Local
 
 let CreateSocket settings = connectClient (BootProgram settings)
 
-let rec ReceiveLoop (serverSocket : Socket) =
+let rec ReceiveLoop (serverSocket : Socket) (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   if (serverSocket.Available > 0) then
-    WriteSentData serverSocket
-  ReceiveLoop serverSocket
+    WriteSentData serverSocket dbConnection
+  ReceiveLoop serverSocket dbConnection
