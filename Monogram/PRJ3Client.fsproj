@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Monogram</RootNamespace>
     <AssemblyName>Monogram</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFSharpCoreVersion>4.4.0.0</TargetFSharpCoreVersion>
     <Name>PRJ3Client</Name>
@@ -60,7 +60,7 @@
     <Content Include="packages.config" />
     <Compile Include="Visualization.fs" />
     <Compile Include="Interface.fs" />
-    <Compile Include="Communicatie.fs" />
+    <Compile Include="Communication.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
