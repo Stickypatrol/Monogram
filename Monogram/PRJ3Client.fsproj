@@ -59,7 +59,7 @@
     <None Include="App.config" />
     <Content Include="packages.config" />
     <Compile Include="Visualization.fs" />
-    <Compile Include="Communicatie.fs" />
+    <Compile Include="Communication.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
