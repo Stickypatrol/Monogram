@@ -52,8 +52,7 @@ let WriteSentData (socket:Socket) =
   ()
 
 //ACTUAL PROGRAM
-
-let CreateSettings () = {LocalIP = (IPAddress.Parse "145.24.221.121"); LocalPort = 8888};
+let CreateSettings () = {LocalIP = (IPAddress.Parse (Console.ReadLine())); LocalPort = 8888};
 
 let CreateSocket settings = connectClient (BootProgram settings)
 
