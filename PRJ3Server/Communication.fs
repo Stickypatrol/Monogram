@@ -24,7 +24,7 @@ type ProgramState =
     ClientSockets : List<Socket>
   }
 
-let Serialize (x:List<string* int>) =
+let Serialize x =
   Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(x))
 
 let BootProgram (settings : Settings) =
@@ -56,19 +56,46 @@ let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   let z = Map.toList y
   z
 
-let WriteSentData (socket:Socket) (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+let q3 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+  let x =
+    query{
+      for row in dbConnection.Trommel do
+      select (row.X_location, row.Y_location)
+    }
+  Seq.fold (fun s xy -> xy::s) [] x
+
+let q4 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+  let x =
+    query{
+      for row in dbConnection.Thefts do
+      select row.Date
+    }
+  x
+
+let q5 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+  let x =
+    query{
+      for x in dbConnection.Thefts do
+      groupBy x.Neighbourhood into g
+      count g into x
+      select (g.Key, x)
+    }
+  x
+  
+
+let WriteSentData (socket:Socket) dbConnection =
   let buffer = Array.create socket.Available (new Byte())
   let _ = socket.Receive(buffer)
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
   //| "1" -> socket.Send(Serialize (dbConnection))
-  | "2" ->  let x = Serialize (q2 dbConnection)
+  | "2" ->  let x = Serialize (q2 dbConnection)//i'm sending data in Byte[] JSON format to the client here
             printfn "%A" x
             ignore <| socket.Send(x)
-  //| "3" -> socket.Send(Serialize (q3 dbConnection))
-  //| "4" -> socket.Send(Serialize (q4 dbConnection))
-  //| _ -> socket.Send(Serialize (q5 dbConnection))
+  | "3" -> ignore <| socket.Send(Serialize (q3 dbConnection))
+  | "4" -> ignore <| socket.Send(Serialize (q4 dbConnection))
+  | _ -> ignore <| socket.Send(Serialize (q5 dbConnection))
   | _ -> failwith "not yet implemented"
   let _ = (socket.Blocking = false)
   ()
@@ -78,7 +105,7 @@ let CreateSettings () = {LocalIP = (IPAddress.Parse (Console.ReadLine())); Local
 
 let CreateSocket settings = connectClient (BootProgram settings)
 
-let rec ReceiveLoop (serverSocket : Socket) (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+let rec ReceiveLoop (serverSocket : Socket) dbConnection =
   if (serverSocket.Available > 0) then
     WriteSentData serverSocket dbConnection
   ReceiveLoop serverSocket dbConnection
