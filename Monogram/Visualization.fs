@@ -7,10 +7,13 @@ open System.Windows.Forms
 open CoroutineMonad
 
 [<STAThread>]
-let exampleprogram () =
-    let myChart = [for x in 0.0 .. 0.1 .. 6.0 -> sin x + cos (2.0 * x)]
-                    |> Chart.Line |> Chart.WithYAxis(Title="Test")
-    let myChartControl = new ChartControl(myChart, Dock=DockStyle.Fill)
+let exampleprogram (list1 : seq<'a*'a>) (list2 : seq<'a*'a>) =
+    let myChart = Chart.Column(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Test")
+    let myChart2 = Chart.Column(list2, Name = "Trommels") |> Chart.WithYAxis(Title="Test") |> Chart.WithLegend
+                                                                        ( InsideArea = false, 
+                                                                        Alignment = StringAlignment.Center, Docking = Docking.Top)
+    let custom_Chart = Chart.Combine([myChart;myChart2])
+    let myChartControl = new ChartControl(custom_Chart, Dock=DockStyle.Fill)
     let lbl = new Label(Text="my label")
     let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
     form.Controls.Add lbl
