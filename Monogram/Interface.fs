@@ -23,8 +23,8 @@
 
     let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
     let result = Run (SendAndReceiveQ1()) (Communication.socket, Communication.ip)
-    let myChartControl = Visualization.second_Chart result
-
+    let myChartControl1 = Visualization.second_Chart (List.fold (fun (xs,ys) (x,y) -> x::xs, y::ysresult) ([],[]) result)
+    
     form.Controls.Add lbl
     form.Controls.Add button1
     form.Controls.Add button2
