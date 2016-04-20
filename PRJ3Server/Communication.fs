@@ -85,8 +85,7 @@ let q5 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //w
     query{
       for x in dbConnection.Thefts do
       groupBy x.Neighbourhood into g
-      count g into x
-      select (g.Key, x)
+      select (g.Key)
     }
   x
   
@@ -97,7 +96,7 @@ let WriteSentData (socket:Socket) dbConnection =
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
-  | "1" -> socket.Send(Serialize (q1 dbConnection))
+  | "1" -> ignore <| socket.Send(Serialize 1 (q1 dbConnection))
   | "2" ->  let x = Serialize 2 (q2 dbConnection)//i'm sending data in Byte[] JSON format to the client here
             printfn "%A" x
             ignore <| socket.Send(x)
@@ -114,7 +113,7 @@ let CreateSocket settings = connectClient (BootProgram settings)
 
 let rec ReceiveLoop() =
   cor{
-    let! serverSocket, dbConnection = getState()
+    let! (serverSocket : Socket), dbConnection = getState()
     if serverSocket.Available > 0 then
       WriteSentData serverSocket dbConnection
       do! ReceiveLoop ()
