@@ -18,5 +18,5 @@ let main args =
     do Application.Run(Interface.form) |> ignore
     let clientsocket = BootClient()
     printfn "starting client loop"
-    do MainClientLoop clientsocket
+    do Run MainClientLoop clientsocket
     0

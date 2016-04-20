@@ -120,5 +120,6 @@ let rec ReceiveLoop() =
       do! ReceiveLoop ()
       return ()
     else
+      do! yield_
       return! ReceiveLoop ()
   }

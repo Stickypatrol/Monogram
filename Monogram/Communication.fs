@@ -4,7 +4,7 @@ open System
 open System.Net
 open System.Net.Sockets
 open System.Text
-
+open CoroutineMonad
 
 let localip = IPAddress.Parse "145.24.200.232"
 
@@ -38,8 +38,11 @@ let rec TrySendData (clientSocket:Socket) =
   ()
 
 //THE ACTUAL PROGRAM
-let rec MainClientLoop (clientSocket:Socket) =
-  let clientSocket' = TryConnect clientSocket localip
-  if clientSocket'.Poll(1000, SelectMode.SelectWrite) then
-    TrySendData clientSocket'
-  MainClientLoop clientSocket'
+let rec MainClientLoop () =
+  cor{
+    let clientSocket' = TryConnect clientSocket localip
+    if clientSocket'.Poll(1000, SelectMode.SelectWrite) then
+      TrySendData clientSocket'
+    MainClientLoop clientSocket'
+
+  }
