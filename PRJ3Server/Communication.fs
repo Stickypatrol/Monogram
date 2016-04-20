@@ -24,7 +24,7 @@ type ProgramState =
     ClientSockets : List<Socket>
   }
 
-let Serialize i x =
+let Serialize (i:int) x =
   Array.concat [|[|(byte i)|];(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(x)))|] //stick a byte with the question number in front to you can read that byte and deserialize the data properly
   //this is probably not even necessary
 
