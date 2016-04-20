@@ -44,5 +44,5 @@ let wait_ interval =
 
 let rec Run c s =
   match c s with
-  | Done(c, s') -> ()
+  | Done(result, s') -> result
   | Yield(c', s') -> Run c' s'

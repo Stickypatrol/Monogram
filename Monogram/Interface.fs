@@ -8,6 +8,8 @@
     open FSharp.Charting.ChartTypes
     open System.Drawing
     open System.Windows.Forms
+    open CoroutineMonad
+    open Communication
 
     let lbl = new Label(Text="Project 3 - Data Visualization", Top = 10, Left = 300, Width = 200)
 
@@ -31,7 +33,11 @@
     form.Controls.Add return_button
     //form.Controls.Add pb
 
-    let firstForm () =
+    
+
+    let firstForm () = //here the result 
+        //within this call the coroutine methods to get the data properly
+        let result = Run (SendFunction "1") (Communication.socket, Communication.ip)
         myChartControl.Show()
         button1.Hide()
         button2.Hide()
@@ -42,6 +48,7 @@
 
     let secondForm () =
         //myChartControl.Show()
+        let result = Run (SendFunction "2") (Communication.socket, Communication.ip)
         button1.Hide()
         button2.Hide()
         button3.Hide()
@@ -51,6 +58,7 @@
 
     let thirdForm () =
         //myChartControl.Show()
+        let result = Run (SendFunction "3") (Communication.socket, Communication.ip)
         button1.Hide()
         button2.Hide()
         button3.Hide()
@@ -61,6 +69,7 @@
 
     let fourthForm () =
         //myChartControl.Show()
+        let result = Run (SendFunction "4") (Communication.socket, Communication.ip)
         button1.Hide()
         button2.Hide()
         button3.Hide()
@@ -70,6 +79,7 @@
 
     let fifthForm () =
         //myChartControl.Show()
+        let result = Run (SendFunction "5") (Communication.socket, Communication.ip)
         button1.Hide()
         button2.Hide()
         button3.Hide()
