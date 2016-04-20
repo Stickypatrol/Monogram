@@ -113,7 +113,7 @@ let CreateSocket settings = connectClient (BootProgram settings)
 
 let rec ReceiveLoop() =
   cor{
-    let! serverSocket, dbConnection = getState()
+    let! (serverSocket : Socket), dbConnection = getState()
     if serverSocket.Available > 0 then
       WriteSentData serverSocket dbConnection
       do! ReceiveLoop ()
