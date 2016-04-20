@@ -5,7 +5,7 @@ open System.Net
 open System.Net.Sockets
 open System.Text
 open CoroutineMonad
-
+open Newtonsoft.Json
 
 let BootClient() =
   let clientSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
@@ -87,4 +87,89 @@ let SendFunction questionnumber =
   cor{
     do! ConnectLoop()
     do! SendLoop questionnumber
+  }
+
+let CheckReceive() =
+  fun (sock:Socket, ip:IPAddress) ->
+    if sock.Available > 0 then
+      Done(true, (sock, ip))
+    else
+      Done(false, (sock, ip))
+
+let ReceiveStuff() =
+  fun (sock:Socket, ip:IPAddress) ->
+    let buffer = Array.create sock.Available (new Byte())
+    let _ = sock.Receive(buffer)
+    printfn "raw data received: %A" (Encoding.ASCII.GetString(buffer))
+    Done(buffer, (sock, ip))
+
+let DeserializeQ1 buffer = //make all functions like this
+  fun (sock, ip) ->
+    let decoded = Encoding.ASCII.GetString(buffer)
+    let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
+    match typeByte with                 //change these types to match the queries sent
+    | "1" ->  Done(JsonConvert.DeserializeObject<List<string*int>>(decoded.[1..decoded.Length-1]), (sock, ip))
+    | _   ->  failwith "wrong function matched with wrong msgtype"
+
+let DeserializeQ2 buffer = //and so on...
+  fun (sock, ip) ->
+    let decoded = Encoding.ASCII.GetString(buffer)
+    let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
+    match typeByte with                 //change these types to match the queries sent
+    | "2" ->  Done(JsonConvert.DeserializeObject<(*change this to the appropriate type for the question*)>(decoded.[1..decoded.Length-1]), (sock, ip))
+    | _   ->  failwith "wrong function matched with wrong msgtype"
+
+let rec ReceiveQuestion1 () = //return answer to question 1 here and deserialize it
+  cor{
+    let! receivestuff = CheckReceive()
+    if receivestuff then
+      let! result = ReceiveStuff()
+      return DeserializeQ1 result
+    else
+      do! yield_
+      return! ReceiveQuestion1 ()
+  }
+  
+let ReceiveQuestion2 () =
+  cor{
+    let! receivestuff = CheckReceive()
+    if receivestuff then
+      let! result = ReceiveStuff()
+      return DeserializeQ2 result
+    else
+      do! yield_
+      return! ReceiveQuestion1 ()
+  }
+  
+let ReceiveQuestion3 () =
+  cor{
+    let! receivestuff = CheckReceive()
+    if receivestuff then
+      let! result = ReceiveStuff()
+      return DeserializeQ3 result
+    else
+      do! yield_
+      return! ReceiveQuestion1 ()
+  }
+  
+let ReceiveQuestion4 () =
+  cor{
+    let! receivestuff = CheckReceive()
+    if receivestuff then
+      let! result = ReceiveStuff()
+      return DeserializeQ4 result
+    else
+      do! yield_
+      return! ReceiveQuestion1 ()
+  }
+  
+let ReceiveQuestion5 () =
+  cor{
+    let! receivestuff = CheckReceive()
+    if receivestuff then
+      let! result = ReceiveStuff()
+      return DeserializeQ5 result
+    else
+      do! yield_
+      return! ReceiveQuestion1 ()
   }

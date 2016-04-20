@@ -8,7 +8,6 @@ open FSharp.Charting
 open FSharp.Charting.ChartTypes
 open System.Drawing
 open System.Windows.Forms
-open CoroutineMonad
 open Newtonsoft.Json
 open AuxTypes
 
