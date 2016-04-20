@@ -42,6 +42,10 @@ let wait_ interval =
     do! wait_()
   }
 
+let getState() =
+  fun s ->
+    Done(s,s)
+
 let rec Run c s =
   match c s with
   | Done(c, s') -> ()

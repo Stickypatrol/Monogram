@@ -2,6 +2,7 @@
 open System.Net
 open System.Net.Sockets
 open AuxTypes
+open CoroutineMonad
 
 [<EntryPoint>]
 let main args =
@@ -9,5 +10,5 @@ let main args =
   let settings = CreateSettings ()
   let socket = CreateSocket settings
   let dbConnection = AuxTypes.dbSchema.GetDataContext()
-  do ReceiveLoop socket dbConnection
+  do Run (ReceiveLoop ()) (socket, dbConnection)
   0

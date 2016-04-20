@@ -112,11 +112,13 @@ let CreateSettings () = {LocalIP = (IPAddress.Parse (Console.ReadLine())); Local
 
 let CreateSocket settings = connectClient (BootProgram settings)
 
-let rec ReceiveLoop (serverSocket : Socket) dbConnection =
+let rec ReceiveLoop() =
   cor{
-    if (serverSocket.Available > 0) then
+    let! serverSocket, dbConnection = getState()
+    if serverSocket.Available > 0 then
       WriteSentData serverSocket dbConnection
-      do! ReceiveLoop serverSocket dbConnection
+      do! ReceiveLoop ()
+      return ()
     else
-      return! ReceiveLoop serverSocket dbConnection
+      return! ReceiveLoop ()
   }
