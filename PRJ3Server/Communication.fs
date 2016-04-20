@@ -44,6 +44,13 @@ let rec connectClient (serverSocket:Socket) =
   else
     connectClient serverSocket
 
+let q1 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt nog niet
+  let x =
+    query{
+      for row in dbConnection.Thefts do
+      select row
+    }
+  x
 let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   let x =
     query{
@@ -65,7 +72,7 @@ let q3 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
     }
   Seq.fold (fun s xy -> xy::s) [] x
 
-let q4 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+let q4 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt nog niet
   let x =
     query{
       for row in dbConnection.Thefts do
@@ -73,7 +80,7 @@ let q4 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
     }
   x
 
-let q5 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+let q5 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt nog niet
   let x =
     query{
       for x in dbConnection.Thefts do
@@ -90,14 +97,13 @@ let WriteSentData (socket:Socket) dbConnection =
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
-  | "1" -> socket.Send(Serialize (q1 1dbConnection))
+   | "1" -> socket.Send(Serialize (q1 dbConnection))
   | "2" ->  let x = Serialize 2 (q2 dbConnection)//i'm sending data in Byte[] JSON format to the client here
             printfn "%A" x
             ignore <| socket.Send(x)
   | "3" -> ignore <| socket.Send(Serialize 3 (q3 dbConnection))
   | "4" -> ignore <| socket.Send(Serialize 4 (q4 dbConnection))
   | _ -> ignore <| socket.Send(Serialize 5 (q5 dbConnection))
-  | _ -> failwith "not yet implemented"
   let _ = (socket.Blocking = false)
   ()
 
