@@ -1,8 +1,9 @@
-﻿open Communication
+﻿open System
 open System.Net
 open System.Net.Sockets
 open AuxTypes
 open CoroutineMonad
+open Communication
 
 [<EntryPoint>]
 let main args =

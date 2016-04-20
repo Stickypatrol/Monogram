@@ -55,13 +55,13 @@
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="AuxTypes.fs" />
-    <Compile Include="CoroutineMonad.fs" />
-    <Compile Include="Communication.fs" />
-    <Compile Include="Program.fs" />
     <None Include="App.config" />
     <Content Include="packages.config" />
+    <Compile Include="CoroutineMonad.fs" />
+    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="AuxTypes.fs" />
+    <Compile Include="Communication.fs" />
+    <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Charting">

@@ -22,7 +22,8 @@
     let return_button = new Button(Text="<-", Top = 10, Left = 10)
 
     let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
-    let myChartControl = Visualization.first_Chart [1,100;2,200;3,300;4,400;5,500] [1,10;2,20;3,30;4,40;5,50]
+    let result = Run (SendAndReceiveQ1()) (Communication.socket, Communication.ip)
+    let myChartControl = Visualization.second_Chart result
 
     form.Controls.Add lbl
     form.Controls.Add button1
@@ -37,7 +38,7 @@
 
     let firstForm () = //here the result 
         //within this call the coroutine methods to get the data properly
-        let result = Run (SendFunction "1") (Communication.socket, Communication.ip)
+        
         myChartControl.Show()
         button1.Hide()
         button2.Hide()

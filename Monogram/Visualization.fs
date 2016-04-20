@@ -7,7 +7,7 @@ open System.Windows.Forms
 open CoroutineMonad
 
 [<STAThread>]
-let first_Chart (list1 : seq<'a*'a>) (list2 : seq<'a*'a>) =
+let second_Chart (list1 : seq<'a*'a>) (list2 : seq<'a*'a>) =
     let myChart = Chart.Column(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Test")
     let myChart2 = Chart.Column(list2, Name = "Trommels") |> Chart.WithYAxis(Title="Test") |> Chart.WithLegend
                                                                         ( InsideArea = false, 
