@@ -97,7 +97,7 @@ let WriteSentData (socket:Socket) dbConnection =
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
-   | "1" -> socket.Send(Serialize (q1 dbConnection))
+  | "1" -> socket.Send(Serialize (q1 dbConnection))
   | "2" ->  let x = Serialize 2 (q2 dbConnection)//i'm sending data in Byte[] JSON format to the client here
             printfn "%A" x
             ignore <| socket.Send(x)
@@ -113,6 +113,10 @@ let CreateSettings () = {LocalIP = (IPAddress.Parse (Console.ReadLine())); Local
 let CreateSocket settings = connectClient (BootProgram settings)
 
 let rec ReceiveLoop (serverSocket : Socket) dbConnection =
-  if (serverSocket.Available > 0) then
-    WriteSentData serverSocket dbConnection
-  ReceiveLoop serverSocket dbConnection
+  cor{
+    if (serverSocket.Available > 0) then
+      WriteSentData serverSocket dbConnection
+      do! ReceiveLoop serverSocket dbConnection
+    else
+      return! ReceiveLoop serverSocket dbConnection
+  }
