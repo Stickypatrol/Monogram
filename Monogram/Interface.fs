@@ -21,7 +21,7 @@
 
     let return_button = new Button(Text="<-", Top = 10, Left = 10)
 
-    let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
+    let form = new Form(Visible = true, TopMost = true, Width = 1600, Height = 900)
     let socket, ip = getsocketandip()
     let SendAndReceiveAll() =
       cor{
@@ -82,7 +82,7 @@
 //        //pb.Show()
 //        return_button.Show()
         form.SendToBack()
-        animateMap.animateMap |> ignore
+        animateMap.animateMap() |> ignore
 
     let fourthForm () =
         myChartControl4.Show()
