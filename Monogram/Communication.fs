@@ -78,12 +78,12 @@ let ReceiveStuff() =
     printfn "raw data received: %A" (Encoding.ASCII.GetString(buffer))
     Done(buffer, (sock, ip))
 
-let DeserializeQ1 buffer = //list of areas and list of theft amounts
+let DeserializeQ1 buffer = //list of relative safety indexes and list of areas
   fun (sock, ip) ->
     let decoded = Encoding.ASCII.GetString(buffer)
     let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
     match typeByte with                 //change these types to match the queries sent
-    | "1" ->  Done(JsonConvert.DeserializeObject<List<string>>(decoded.[1..decoded.Length-1]), (sock, ip))
+    | "1" ->  Done(JsonConvert.DeserializeObject<List<float>*List<string>>(decoded.[1..decoded.Length-1]), (sock, ip))
     | _   ->  failwith "wrong function matched with wrong msgtype"
 
 let DeserializeQ2 buffer = //list of dates for thefts and list of dates for trommels

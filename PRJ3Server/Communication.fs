@@ -51,9 +51,20 @@ let q1 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //w
       groupBy theft.Neighbourhood into g
       select g.Key
     }
-  [for y in x do yield y]
+  let y area =
+    query{
+      for theft in dbConnection.Thefts do
+      where (theft.Neighbourhood = area)
+      select theft
+      count
+    }
+  let theftcounts = List.fold (fun s x -> s@[y x]) [] (x |> List.ofSeq)
+  let modifier = 1.0/(List.fold (fun s x -> if float x > s then float x else s) 0.0 theftcounts)
+  let relsafety = List.map (fun x -> (float x) * modifier) theftcounts
+  relsafety, (x |> List.ofSeq)
 
 let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+  
   let thefts =
     query{
       for theft in dbConnection.Thefts do
@@ -64,7 +75,17 @@ let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
       for trommel in dbConnection.Trommel do
       select trommel.Date
     }
-  [for x in thefts do yield x],[for x in trommels do yield x] //this returns a list of date for thefts and a list of dates for trommels
+  let theftdates, trommeldates = [for x in thefts do yield x],[for x in trommels do yield x] //this returns a list of date for thefts and a list of dates for trommels
+  let thefts' = snd(List.fold (fun (pastdate, s) x -> if pastdate <> "" then
+                                                        if pastdate = x then
+                                                          match s with
+                                                          | h::t -> (x,((x, ((snd h)+1))::t))
+                                                          | [] -> (x, (x, (1))::[])
+                                                        else
+                                                          (x, (((x, 1)::s)))
+                                                      else
+                                                        (x,(s))) ("", []) theftdates)
+  trommeldates, thefts'
 
 let q3 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   let xylist =

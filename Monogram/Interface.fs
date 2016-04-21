@@ -22,9 +22,18 @@
     let return_button = new Button(Text="<-", Top = 10, Left = 10)
 
     let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
-    let result = Run (SendAndReceiveQ1()) (Communication.socket, Communication.ip)
-    let myChartControl1 = Visualization.second_Chart (List.fold (fun (xs,ys) (x,y) -> x::xs, y::ysresult) ([],[]) result)
+    let result1 = Run (SendAndReceiveQ1()) (Communication.socket, Communication.ip)
+    let result2 = Run (SendAndReceiveQ2()) (Communication.socket, Communication.ip)
+    let result3 = Run (SendAndReceiveQ3()) (Communication.socket, Communication.ip)
+    let result4 = Run (SendAndReceiveQ4()) (Communication.socket, Communication.ip)
+    let result5 = Run (SendAndReceiveQ5()) (Communication.socket, Communication.ip)
+    let myChartControl1 = Visualization.first_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result1) (snd result1))
+    let myChartControl2 = Visualization.second_Chart  (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result2) (snd result2))
+    let myChartControl3 = Visualization.third_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result3) (snd result3))
+    let myChartControl4 = Visualization.fourth_Chart  (List.fold2 (fun s name year -> (name, year)::s) [] (snd result4) (fst result4))
+    let myChartControl5 = Visualization.fifth_Chart   (List.fold2 (fun s area thefts -> (thefts, area)::s) [] (fst result5) (snd result5))
     
+
     form.Controls.Add lbl
     form.Controls.Add button1
     form.Controls.Add button2
