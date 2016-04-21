@@ -8,11 +8,12 @@ open CoroutineMonad
 open Newtonsoft.Json
 
 let BootClient() =
-  let clientSocket = new Socket(SocketType.Stream, ProtocolType.Tcp)
+  let clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
   printfn "clientsocket has been initialized"
   clientSocket//clientsocket is connected
   
-let socket, ip = (BootClient()), (IPAddress.Parse "145.24.200.232")
+let getsocketandip () = (BootClient()), (IPAddress.Parse "145.24.221.121")
+
 let TryConnect () =
   fun (sock:Socket, ip:IPAddress) ->
     if sock.Poll(1000, SelectMode.SelectWrite) then
@@ -60,8 +61,13 @@ let rec SendLoop questionnumber =
 //THE ACTUAL PROGRAM
 let SendFunction questionnumber =
   cor{
-    do! ConnectLoop()
     do! SendLoop questionnumber
+  }
+
+let ConnectFunction() =
+  cor{
+    do! ConnectLoop()
+    return ()
   }
 
 let CheckReceive() =

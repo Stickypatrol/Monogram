@@ -40,7 +40,8 @@ let BootProgram (settings : Settings) =
 let rec connectClient (serverSocket:Socket) =
   if serverSocket.Poll(1000, SelectMode.SelectRead) then
     printfn "accepting client"
-    (serverSocket.Accept())
+    let clientSocket = serverSocket.Accept()
+    clientSocket, serverSocket
   else
     connectClient serverSocket
 
@@ -87,19 +88,19 @@ let q5 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   let counts = dbConnection.DataContext.ExecuteQuery<int>(@"select count(neighbourhood) from thefts group by neighbourhood order by neighbourhood")
   List.fold2 (fun (counts, areas) count area -> count::counts, area::areas) ([],[]) (counts |> List.ofSeq) (areas |> List.ofSeq)
 
-let SendBackData (socket:Socket) dbConnection =
-  let buffer = Array.create socket.Available (new Byte())
-  let _ = socket.Receive(buffer)
+let SendBackData (clientSocket:Socket) (serverSocket:Socket) dbConnection =
+  let buffer = Array.create clientSocket.Available (new Byte())
+  let _ = clientSocket.Receive(buffer)
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
-  | "1" -> ignore <| socket.Send(Serialize 1 (q1 dbConnection))
-  | "2" -> ignore <| socket.Send(Serialize 2 (q2 dbConnection))
-  | "3" -> ignore <| socket.Send(Serialize 3 (q3 dbConnection))
-  | "4" -> ignore <| socket.Send(Serialize 4 (q4 dbConnection))
-  | "5" -> ignore <| socket.Send(Serialize 5 (q5 dbConnection))
+  | "1" -> ignore <| clientSocket.Send(Serialize 1 (q1 dbConnection))
+  | "2" -> ignore <| clientSocket.Send(Serialize 2 (q2 dbConnection))
+  | "3" -> ignore <| clientSocket.Send(Serialize 3 (q3 dbConnection))
+  | "4" -> ignore <| clientSocket.Send(Serialize 4 (q4 dbConnection))
+  | "5" -> ignore <| clientSocket.Send(Serialize 5 (q5 dbConnection))
   | _ -> failwith "incorrect byte received"
-  let _ = (socket.Blocking = false)
+  let _ = (clientSocket.Blocking = false)
   ()
 
 //ACTUAL PROGRAM
@@ -110,9 +111,9 @@ let CreateSocket settings = connectClient (BootProgram settings)
 
 let rec ReceiveLoop() =
   cor{
-    let! (serverSocket : Socket), dbConnection = getState()
-    if serverSocket.Available > 0 then
-      SendBackData serverSocket dbConnection
+    let! (serverSocket : Socket), (clientSocket : Socket), dbConnection = getState()
+    if clientSocket.Available > 0 then
+      SendBackData clientSocket serverSocket dbConnection
       do! ReceiveLoop ()
       return ()
     else

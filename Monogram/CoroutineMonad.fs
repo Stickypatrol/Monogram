@@ -46,3 +46,8 @@ let rec Run c s =
   match c s with
   | Done(result, s') -> result
   | Yield(c', s') -> Run c' s'
+
+let rec RunAll c s =
+  match c s with
+  | Done(result, s') -> result, s'
+  | Yield(c', s') -> RunAll c s

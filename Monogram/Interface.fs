@@ -22,11 +22,14 @@
     let return_button = new Button(Text="<-", Top = 10, Left = 10)
 
     let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
-    let result1 = Run (SendAndReceiveQ1()) (Communication.socket, Communication.ip)
-    let result2 = Run (SendAndReceiveQ2()) (Communication.socket, Communication.ip)
-    let result3 = Run (SendAndReceiveQ3()) (Communication.socket, Communication.ip)
-    let result4 = Run (SendAndReceiveQ4()) (Communication.socket, Communication.ip)
-    let result5 = Run (SendAndReceiveQ5()) (Communication.socket, Communication.ip)
+    let socket, ip = getsocketandip()
+    let socket', ip' = RunAll ConnectLoop() (socket, ip)
+    let result1,  = RunAll ConnectLoop() (socket, ip)
+    let result1 = Run (SendAndReceiveQ1()) (socket', ip')
+    let result2 = Run (SendAndReceiveQ2()) (socket, ip)
+    let result3 = Run (SendAndReceiveQ3()) (socket, ip)
+    let result4 = Run (SendAndReceiveQ4()) (socket, ip)
+    let result5 = Run (SendAndReceiveQ5()) (socket, ip)
     let myChartControl1 = Visualization.first_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result1) (snd result1))
     let myChartControl2 = Visualization.second_Chart  result2
     let myChartControl3 = Visualization.third_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result3) (snd result3))
@@ -45,7 +48,7 @@
 
     
 
-    let firstForm () = //here the result 
+    let firstForm () = //here the result
         //within this call the coroutine methods to get the data properly
         myChartControl1.Show()
         button1.Hide()
