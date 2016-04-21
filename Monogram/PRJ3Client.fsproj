@@ -60,6 +60,7 @@
     <Content Include="packages.config" />
     <Compile Include="Visualization.fs" />
     <Compile Include="Communication.fs" />
+    <Compile Include="MapAnimation.fs" />
     <Compile Include="Interface.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>

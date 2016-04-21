@@ -17,7 +17,7 @@ let first_Chart (list1 : List<'a*'b>) (list2 : List<'a*'b>) =
     myChartControl
 
 let second_Chart (list1 : List<'a*'a>) (list2 : List<'a*'a>) =
-    let myChart = Chart.(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Test")
+    let myChart = Chart.Column(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Test")
     let myChart2 = Chart.Column(list2, Name = "Trommels") |> Chart.WithYAxis(Title="Test") |> Chart.WithLegend
                                                                         ( InsideArea = false, 
                                                                         Alignment = StringAlignment.Center, Docking = Docking.Top)
