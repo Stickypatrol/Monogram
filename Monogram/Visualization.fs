@@ -25,11 +25,15 @@ let second_Chart (list1 : List<string*int>) =
       | [], []        -> s
     let lista' = foldy [] months lista ""
     let listb' = foldy [] months listb 0
-    let myChart = Chart.Column(lista', Name = "Thefts") |> Chart.WithYAxis(Title="Amount of Thefts") |> Chart.WithXAxis(Title="Month")
+    let myChart1 = Chart.Column(lista', Name = "Thefts") |> Chart.WithYAxis(Title="Amount of Thefts") |> Chart.WithXAxis(Title="Month")
                                                                       |> Chart.WithLegend
                                                                           ( InsideArea = false, 
                                                                           Alignment = StringAlignment.Center, Docking = Docking.Top)
-    let custom_Chart = Chart.Combine([myChart])
+    let myChart2 = Chart.Column(lista', Name = "Trommels") |> Chart.WithYAxis(Title="Amount of Trommels") |> Chart.WithXAxis(Title="Month")
+                                                                      |> Chart.WithLegend
+                                                                          ( InsideArea = false, 
+                                                                          Alignment = StringAlignment.Center, Docking = Docking.Top)
+    let custom_Chart = Chart.Combine([myChart1;myChart2])
     let myChartControl = new ChartControl(custom_Chart, Dock=DockStyle.Fill)
     myChartControl
     //List<float, float> locations of trommels
