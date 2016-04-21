@@ -64,28 +64,10 @@ let q1 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //w
   relsafety, (x |> List.ofSeq)
 
 let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+  let dates = dbConnection.DataContext.ExecuteQuery<int>(@"select COUNT(date) from thefts group by YEAR(Convert(datetime, date ))")
+  let dates' = dates |> List.ofSeq
+  [2011;2012;2013],[dates'.Item 1;dates'.Item 2;dates'.Item 0]
   
-  let thefts =
-    query{
-      for theft in dbConnection.Thefts do
-      select theft.Date
-    }
-  let trommels =
-    query{
-      for trommel in dbConnection.Trommel do
-      select trommel.Date
-    }
-  let theftdates, trommeldates = [for x in thefts do yield x],[for x in trommels do yield x] //this returns a list of date for thefts and a list of dates for trommels
-  let thefts' = snd(List.fold (fun (pastdate, s) x -> if pastdate <> "" then
-                                                        if pastdate = x then
-                                                          match s with
-                                                          | h::t -> (x,((x, ((snd h)+1))::t))
-                                                          | [] -> (x, (x, (1))::[])
-                                                        else
-                                                          (x, (((x, 1)::s)))
-                                                      else
-                                                        (x,(s))) ("", []) theftdates)
-  trommeldates, thefts'
 
 let q3 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   let xylist =

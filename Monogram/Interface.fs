@@ -28,7 +28,7 @@
     let result4 = Run (SendAndReceiveQ4()) (Communication.socket, Communication.ip)
     let result5 = Run (SendAndReceiveQ5()) (Communication.socket, Communication.ip)
     let myChartControl1 = Visualization.first_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result1) (snd result1))
-    let myChartControl2 = Visualization.second_Chart  (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result2) (snd result2))
+    let myChartControl2 = Visualization.second_Chart  result2
     let myChartControl3 = Visualization.third_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result3) (snd result3))
     let myChartControl4 = Visualization.fourth_Chart  (List.fold2 (fun s name year -> (name, year)::s) [] (snd result4) (fst result4))
     let myChartControl5 = Visualization.fifth_Chart   (List.fold2 (fun s area thefts -> (thefts, area)::s) [] (fst result5) (snd result5))
@@ -47,8 +47,7 @@
 
     let firstForm () = //here the result 
         //within this call the coroutine methods to get the data properly
-        
-        myChartControl.Show()
+        myChartControl1.Show()
         button1.Hide()
         button2.Hide()
         button3.Hide()
@@ -58,7 +57,7 @@
 
     let secondForm () =
         //myChartControl.Show()
-        let result = Run (SendFunction "2") (Communication.socket, Communication.ip)
+        myChartControl2.Show()
         button1.Hide()
         button2.Hide()
         button3.Hide()
@@ -67,8 +66,7 @@
         return_button.Show()
 
     let thirdForm () =
-        //myChartControl.Show()
-        let result = Run (SendFunction "3") (Communication.socket, Communication.ip)
+        myChartControl3.Show()
         button1.Hide()
         button2.Hide()
         button3.Hide()
@@ -78,8 +76,7 @@
         return_button.Show()
 
     let fourthForm () =
-        //myChartControl.Show()
-        let result = Run (SendFunction "4") (Communication.socket, Communication.ip)
+        myChartControl4.Show()
         button1.Hide()
         button2.Hide()
         button3.Hide()
@@ -88,8 +85,7 @@
         return_button.Show()
 
     let fifthForm () =
-        //myChartControl.Show()
-        let result = Run (SendFunction "5") (Communication.socket, Communication.ip)
+        myChartControl5.Show()
         button1.Hide()
         button2.Hide()
         button3.Hide()
@@ -98,7 +94,11 @@
         return_button.Show()
 
     let returnFunc () =
-        myChartControl.Hide()
+        myChartControl1.Hide()
+        myChartControl2.Hide()
+        myChartControl3.Hide()
+        myChartControl4.Hide()
+        myChartControl5.Hide()
         button1.Show()
         button2.Show()
         button3.Show()
@@ -114,9 +114,17 @@
     button5.Click.Add(fun _ -> fifthForm())
     return_button.Click.Add(fun _ -> returnFunc())
     
-    form.Controls.Add(myChartControl)
+    form.Controls.Add(myChartControl1)
+    form.Controls.Add(myChartControl2)
+    form.Controls.Add(myChartControl3)
+    form.Controls.Add(myChartControl4)
+    form.Controls.Add(myChartControl5)
 
-    myChartControl.Hide()
+    myChartControl1.Hide()
+    myChartControl2.Hide()
+    myChartControl3.Hide()
+    myChartControl4.Hide()
+    myChartControl5.Hide()
     return_button.Hide()
     //pb.Hide()
     

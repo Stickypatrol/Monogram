@@ -14,18 +14,18 @@ let first_Chart (list1 : List<float*string>) =
     let myChartControl = new ChartControl(myChart, Dock=DockStyle.Fill)
     myChartControl
     //dates of thefts and trommels respectively List<string, string>
-let second_Chart (list1 : List<string*int>) (list2 : List<string*int>) =
-    let myChart = Chart.Column(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Amount of Thefts") |> Chart.WithXAxis(Title="Date")
-    let myChart2 = Chart.Column(list2, Name = "Trommels") |> Chart.WithYAxis(Title="Amount of Trommels") |> Chart.WithXAxis(Title="Date") |> Chart.WithLegend
-                                                                        ( InsideArea = false, 
-                                                                        Alignment = StringAlignment.Center, Docking = Docking.Top)
-    let custom_Chart = Chart.Combine([myChart;myChart2])
+let second_Chart (list1 : List<int*int>) =
+    let myChart = Chart.Column(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Amount of Thefts") |> Chart.WithXAxis(Title="Year")
+                                                                      |> Chart.WithLegend
+                                                                          ( InsideArea = false, 
+                                                                          Alignment = StringAlignment.Center, Docking = Docking.Top)
+    let custom_Chart = Chart.Combine([myChart])
     let myChartControl = new ChartControl(custom_Chart, Dock=DockStyle.Fill)
     myChartControl
     //List<float, float> locations of trommels
 let third_Chart (list1 : List<float*float>) = //hier even naar kijken, dit moet een map worden
     let myChart = Chart.Column(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Test") |> Chart.WithLegend
-                                                                        ( InsideArea = false, 
+                                                                        ( InsideArea = false, //DIT MOET HELEMAAL VERANDERD WORDEN NAAR EEN MAP DUS MUSTAFA GA JE GANG
                                                                         Alignment = StringAlignment.Center, Docking = Docking.Top)
     let custom_Chart = Chart.Combine([myChart;])
     let myChartControl = new ChartControl(custom_Chart, Dock=DockStyle.Fill)

@@ -91,7 +91,8 @@ let DeserializeQ2 buffer = //list of dates for thefts and list of dates for trom
     let decoded = Encoding.ASCII.GetString(buffer)
     let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
     match typeByte with                 //change these types to match the queries sent
-    | "2" ->  Done(JsonConvert.DeserializeObject<List<String>*List<String>>(decoded.[1..decoded.Length-1]), (sock, ip))
+    | "2" ->  let x = JsonConvert.DeserializeObject<List<int>*List<int>>(decoded.[1..decoded.Length-1])
+              Done((List.fold2 (fun s x y -> s@[x,y]) [] (fst x) (snd x)), (sock, ip))
     | _   ->  failwith "wrong function matched with wrong msgtype"
     
 let DeserializeQ3 buffer = //list of locations list x list y
