@@ -45,7 +45,7 @@ let rec connectClient (serverSocket:Socket) =
   else
     connectClient serverSocket
 
-let q1 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt nog niet
+let q1 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt godverdomme wel
   let x =
     query{
       for theft in dbConnection.Thefts do
@@ -64,13 +64,13 @@ let q1 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //w
   let relsafety = List.map (fun x -> (float x) * modifier) theftcounts
   relsafety, (x |> List.ofSeq)
 
-let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+let q4 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   let dates = dbConnection.DataContext.ExecuteQuery<int>(@"select COUNT(date) from thefts group by YEAR(Convert(datetime, date ))")
   let dates' = dates |> List.ofSeq
-  [2011;2012;2013],[dates'.Item 1;dates'.Item 2;dates'.Item 0]
+  [2011;2012;2013],[dates'.Item 1;dates'.Item 2;dates'.Item 0] //klopt
   
 
-let q3 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+let q3 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //klopt
   let xylist =
     query{
       for trommel in dbConnection.Trommel do
@@ -80,12 +80,16 @@ let q3 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   printfn "%A" (fst x).Length
   x
 
-let q4 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt nog niet
-  let dates = dbConnection.DataContext.ExecuteQuery<string>(@"select date from thefts group by date order by Convert(datetime, date)")
-  let trommelsperdate = dbConnection.DataContext.ExecuteQuery<int>(@"select Count(date) from thefts group by date order by Convert(datetime, date)") 
-  dates |> List.ofSeq, trommelsperdate |> List.ofSeq
+let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt nog niet
+  let dates2011 = dbConnection.DataContext.ExecuteQuery<int>(@"select count(date) from thefts where YEAR(Convert(datetime, date)) = '2011' group by month(Convert(datetime, date))")
+  let dates2012 = dbConnection.DataContext.ExecuteQuery<int>(@"select count(date) from thefts where YEAR(Convert(datetime, date)) = '2012' group by month(Convert(datetime, date))")
+  let dates2013 = dbConnection.DataContext.ExecuteQuery<int>(@"select count(date) from thefts where YEAR(Convert(datetime, date)) = '2013' group by month(Convert(datetime, date))")
+  let trommels2011 = dbConnection.DataContext.ExecuteQuery<int>(@"select count(*) from trommel where YEAR(datetime) = '2011' group by MONTH(datetime)")
+  let trommels2012 = dbConnection.DataContext.ExecuteQuery<int>(@"select count(*) from trommel where YEAR(datetime) = '2012' group by MONTH(datetime)")
+  let trommels2013 = dbConnection.DataContext.ExecuteQuery<int>(@"select count(*) from trommel where YEAR(datetime) = '2013' group by MONTH(datetime)")
+  (dates2011|> List.ofSeq)@(dates2012|> List.ofSeq)@(dates2013|> List.ofSeq), (trommels2011|> List.ofSeq)@(trommels2012|> List.ofSeq)@(trommels2013|> List.ofSeq)
 
-let q5 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
+let q5 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt
   let areas = dbConnection.DataContext.ExecuteQuery<string>(@"select neighbourhood from thefts group by neighbourhood order by neighbourhood")
   let counts = dbConnection.DataContext.ExecuteQuery<int>(@"select count(neighbourhood) from thefts group by neighbourhood order by neighbourhood")
   (counts |> List.ofSeq), (areas |> List.ofSeq)

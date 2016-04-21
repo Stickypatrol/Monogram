@@ -93,7 +93,13 @@ let DeserializeQ2 buffer = //list of dates for thefts and list of dates for trom
   fun (sock, ip) ->
     let decoded = Encoding.ASCII.GetString(buffer)
     let x = JsonConvert.DeserializeObject<List<string>*List<int>>(decoded)
-    Done((List.fold2 (fun s x y -> s@[x,y]) [] (fst x) (snd x)), (sock, ip))
+    let rec foldy s x y =
+      match x, y with
+      | xh::xt, yh::yt -> foldy (s@[xh,yh]) xt yt
+      | xh::xt, [] -> foldy (s@[xh,0]) xt []
+      | [], xh::xt -> foldy (s@["",xh]) [] xt
+      | [], [] -> s
+    Done((foldy [] (fst x) (snd x)), (sock, ip))
     
 let DeserializeQ3 a b c d e f g= //list of locations list x list y
   fun (sock, ip) ->
