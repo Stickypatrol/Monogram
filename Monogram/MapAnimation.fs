@@ -12,12 +12,10 @@
     open System.Windows.Forms
     open CoroutineMonad
 
-    let blur (image:Bitmap) blurSize =
-        let blurred = new Bitmap(image.Width, image.Height)
-        let graphics = Graphics.FromImage(blurred)
-        let rectangle = Rectangle(0, 0, image.Width, image.Height)
-        graphics.DrawImage(image, rectangle, rectangle, GraphicsUnit.Pixel);
-        blurred
+    type Vector2 = 
+        {
+        x:float
+        y:float}
 
     let enableDobuleBuffer (control : Control) =
       let controlType = control.GetType()
@@ -40,19 +38,31 @@
       red_dot.Location <- pos
       red_dot
 
+    let dummydate = [(51.9229316711426, 4.46130990982056);(51.9220695495605, 4.48883008956909);(51.9263496398926, 4.47619009017944);(51.9297218322754, 4.47138023376465);(51.9301986694336, 4.47891998291016)]
+
+    let targetlat = 51.92293167114258
+    let targetlon = 4.461309909820557
+    let pixelY x = ((x - 51.984986) / (51.83827 - 51.984986)) * (759.0 - 0.0)
+    let pixelX x = ((x - 4.297714) / (4.710388 - 4.297714)) * (1329.0 - 0.0)
+    
     let seed = Random()
-    let get_random_pos () = new Point(seed.Next(10,500), seed.Next(10,500))
-    let generate_dot (form : Form) reddot =
-        let reddot = createDot (reddot, get_random_pos())
+//    let get_random_pos () = new Point(seed.Next(10,500), seed.Next(10,500))
+    let generate_dot (form : Form) reddot x =
+        let reddot = createDot (reddot, new Point(int (fst x), int (snd x)))
         form.Controls.Add reddot
         reddot.BringToFront()
 
-    let rec generate_button (form : Form)  =
-        let button = createButton ("Click me", get_random_pos())
-        form.Controls.Add button
-        button.Click.Add(fun _ -> generate_button form)
-        button.BringToFront()
+//    let rec generate_button (form : Form)  =
+//        let button = createButton ("Click me", get_random_pos())
+//        form.Controls.Add button
+//        button.Click.Add(fun _ -> generate_button form)
+//        button.BringToFront()
   
+    let extract form reddot x =
+        generate_dot form reddot (pixelX (snd x), pixelY (fst x))
+
+    let drawTrommels form reddot =
+        dummydate |> List.iter(extract form reddot)
     
     let animateMap () =
         let funcA () =
@@ -60,13 +70,14 @@
                 let picture = new PictureBox()
                 let background = new Bitmap("rotterdam.jpg")
                 picture.Image <- background
-                picture.Size <- Size(1000,1900)
+                picture.Size <- Size(1900,1000)
                 picture
             let reddot = new Bitmap("Reddot.png")
             let form = new Form()
             form.Height <- 1000
             form.Width <- 1900
             form.Controls.Add (picture)
+            form.BringToFront()
     
             //take 2 points, figure out where exactly they are -> google maps
             //
@@ -78,14 +89,14 @@
     //            }
     //        
     //        let coStep 
+
             let updateLoop =
                 async {
     //                generate_dot form reddot
-                    generate_button form
+                    drawTrommels form reddot
                     while true do
-                        generate_dot form reddot
                         do! Async.Sleep(16) }
 
             Async.StartImmediate updateLoop
-            Application.Run form
+            form.ShowDialog()
         funcA ()
