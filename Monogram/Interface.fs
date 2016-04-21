@@ -37,7 +37,7 @@
     let myChartControl1 = Visualization.first_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst r1) (snd r1))
     let myChartControl2 = Visualization.second_Chart  r2
     let myChartControl3 = Visualization.third_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst r3) (snd r3))
-    let myChartControl4 = Visualization.fourth_Chart  (List.fold2 (fun s name year -> (name, year)::s) [] (snd r4) (fst r4))
+    let myChartControl4 = Visualization.fourth_Chart  (List.fold2 (fun s thefts year -> (thefts, year)::s) [] (snd r4) (fst r4))
     let myChartControl5 = Visualization.fifth_Chart   (List.fold2 (fun s area thefts -> (thefts, area)::s) [] (fst r5) (snd r5))
     
 

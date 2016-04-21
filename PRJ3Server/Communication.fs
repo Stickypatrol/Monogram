@@ -24,8 +24,8 @@ type ProgramState =
     ClientSockets : List<Socket>
   }
 
-let Serialize (i:int) x =
-  Array.concat [|[|(byte i)|];(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(x)))|] //stick a byte with the question number in front to you can read that byte and deserialize the data properly
+let Serialize x =
+  Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(x)) //stick a byte with the question number in front to you can read that byte and deserialize the data properly
   //this is probably not even necessary
 
 let BootProgram (settings : Settings) =
@@ -76,7 +76,9 @@ let q3 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
       for trommel in dbConnection.Trommel do
       select (trommel.X_location, trommel.Y_location)
     }
-  Seq.fold (fun (xs, ys) (x, y) -> x::xs, y::ys) ([],[]) xylist
+  let x = Seq.fold (fun (xs, ys) (x, y) -> x::xs, y::ys) ([],[]) xylist
+  printfn "%A" (fst x).Length
+  x
 
 let q4 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt nog niet
   let dates = dbConnection.DataContext.ExecuteQuery<string>(@"select date from thefts group by date order by Convert(datetime, date)")
@@ -86,7 +88,42 @@ let q4 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //w
 let q5 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   let areas = dbConnection.DataContext.ExecuteQuery<string>(@"select neighbourhood from thefts group by neighbourhood order by neighbourhood")
   let counts = dbConnection.DataContext.ExecuteQuery<int>(@"select count(neighbourhood) from thefts group by neighbourhood order by neighbourhood")
-  List.fold2 (fun (counts, areas) count area -> count::counts, area::areas) ([],[]) (counts |> List.ofSeq) (areas |> List.ofSeq)
+  (counts |> List.ofSeq), (areas |> List.ofSeq)
+
+let divide7 (x:float list*float list) =
+  let y, z = fst x |> List.toArray, snd x |> List.toArray
+  ((List.ofArray y.[0..100]), (List.ofArray z.[0..100])),
+  ((List.ofArray y.[101..200]), (List.ofArray z.[101..200])),
+  ((List.ofArray y.[201..300]), (List.ofArray z.[201..300])),
+  ((List.ofArray y.[301..400]), (List.ofArray z.[301..400])),
+  ((List.ofArray y.[401..500]), (List.ofArray z.[401..500])),
+  ((List.ofArray y.[501..600]), (List.ofArray z.[501..600])),
+  ((List.ofArray y.[601..700]), (List.ofArray z.[601..700]))
+
+let SendPart x =
+  fun (s:Socket) ->
+    ignore <| s.Send(Serialize x)
+    Done((), s)
+
+let q3SendLoop x =
+  let a,b,c,d,e,f,g = divide7 x
+  cor{
+    do! SendPart a
+    do! wait_ 0.2
+    do! SendPart b
+    do! wait_ 0.2
+    do! SendPart c
+    do! wait_ 0.2
+    do! SendPart d
+    do! wait_ 0.2
+    do! SendPart e
+    do! wait_ 0.2
+    do! SendPart f
+    do! wait_ 0.2
+    do! SendPart g
+    do! wait_ 0.2
+    return ()
+  }
 
 let SendBackData (clientSocket:Socket) (serverSocket:Socket) dbConnection =
   let buffer = Array.create serverSocket.Available (new Byte())
@@ -94,11 +131,13 @@ let SendBackData (clientSocket:Socket) (serverSocket:Socket) dbConnection =
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
-  | "1" ->  ignore <| serverSocket.Send(Serialize 1 (q1 dbConnection))
-  | "2" ->  ignore <| serverSocket.Send(Serialize 2 (q2 dbConnection))
-  | "3" ->  ignore <| serverSocket.Send(Serialize 3 (q3 dbConnection))
-  | "4" ->  ignore <| serverSocket.Send(Serialize 4 (q4 dbConnection))
-  | "5" ->  ignore <| serverSocket.Send(Serialize 5 (q5 dbConnection))
+  | "1" ->  ignore <| serverSocket.Send(Serialize (q1 dbConnection))
+  | "2" ->  ignore <| serverSocket.Send(Serialize (q2 dbConnection))
+  | "3" ->  let _ = Run (q3SendLoop (q3 dbConnection)) serverSocket
+            ()
+  //ignore <| serverSocket.Send(Serialize (q3 dbConnection))
+  | "4" ->  ignore <| serverSocket.Send(Serialize (q4 dbConnection))
+  | "5" ->  ignore <| serverSocket.Send(Serialize (q5 dbConnection))
   | _ -> failwith "incorrect byte received"
   let _ = (clientSocket.Blocking = false)
   ()

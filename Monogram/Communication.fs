@@ -81,50 +81,43 @@ let ReceiveStuff() =
   fun (sock:Socket, ip:IPAddress) ->
     let buffer = Array.create sock.Available (new Byte())
     let _ = sock.Receive(buffer)
-    printfn "raw data received the first byte is: %A" (Encoding.ASCII.GetString(buffer.[1..buffer.Length-1]))
+    printfn "raw data received is: %A" (Encoding.ASCII.GetString(buffer))
     Done(buffer, (sock, ip))
 
 let DeserializeQ1 buffer = //list of relative safety indexes and list of areas
   fun (sock, ip) ->
     let decoded = Encoding.ASCII.GetString(buffer)
-    //let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
-    //match typeByte with                 //change these types to match the queries sent
-    //| "1" ->  
-    Done(JsonConvert.DeserializeObject<List<float>*List<string>>(decoded.[1..decoded.Length-1]), (sock, ip))
-    //| _   ->  failwith "wrong function matched with wrong msgtype"
+    Done(JsonConvert.DeserializeObject<List<float>*List<string>>(decoded), (sock, ip))
 
 let DeserializeQ2 buffer = //list of dates for thefts and list of dates for trommels
   fun (sock, ip) ->
     let decoded = Encoding.ASCII.GetString(buffer)
-    let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
-    match typeByte with                 //change these types to match the queries sent
-    | "2" ->  let x = JsonConvert.DeserializeObject<List<int>*List<int>>(decoded.[1..decoded.Length-1])
-              Done((List.fold2 (fun s x y -> s@[x,y]) [] (fst x) (snd x)), (sock, ip))
-    | _   ->  failwith "wrong function matched with wrong msgtype"
+    let x = JsonConvert.DeserializeObject<List<string>*List<int>>(decoded)
+    Done((List.fold2 (fun s x y -> s@[x,y]) [] (fst x) (snd x)), (sock, ip))
     
-let DeserializeQ3 buffer = //list of locations list x list y
+let DeserializeQ3 a b c d e f g= //list of locations list x list y
   fun (sock, ip) ->
-    let decoded = Encoding.ASCII.GetString(buffer)
-    let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
-    match typeByte with                 //change these types to match the queries sent
-    | "3" ->  Done(JsonConvert.DeserializeObject<List<float>*List<float>>(decoded.[1..decoded.Length-1]), (sock, ip))
-    | _   ->  failwith "wrong function matched with wrong msgtype"
+    let (ax,ay),(bx,by),(cx,cy),(dx,dy),(ex,ey),(fx,fy),(gx,gy) =
+      JsonConvert.DeserializeObject<List<float>*List<float>>(Encoding.ASCII.GetString(a)),
+      JsonConvert.DeserializeObject<List<float>*List<float>>(Encoding.ASCII.GetString(b)),
+      JsonConvert.DeserializeObject<List<float>*List<float>>(Encoding.ASCII.GetString(c)),
+      JsonConvert.DeserializeObject<List<float>*List<float>>(Encoding.ASCII.GetString(d)),
+      JsonConvert.DeserializeObject<List<float>*List<float>>(Encoding.ASCII.GetString(e)),
+      JsonConvert.DeserializeObject<List<float>*List<float>>(Encoding.ASCII.GetString(f)),
+      JsonConvert.DeserializeObject<List<float>*List<float>>(Encoding.ASCII.GetString(g))
+    let finalx, finaly = ax@bx@cx@dx@ex@fx@gx, ay@by@cy@dy@ey@fy@gy
+    Done((finalx, finaly), (sock, ip))
     
-let DeserializeQ4 buffer = //list of dates for the from xdate to ydate amount of thefts - List of dates which correspond to 1 theft each
+let DeserializeQ4 (buffer:Byte []) = //list of dates for the from xdate to ydate amount of thefts - List of dates which correspond to 1 theft each
   fun (sock, ip) ->
+    printfn "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  %A" buffer.Length
     let decoded = Encoding.ASCII.GetString(buffer)
-    let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
-    match typeByte with                 //change these types to match the queries sent
-    | "4" ->  Done(JsonConvert.DeserializeObject<List<String>*List<int>>(decoded.[1..decoded.Length-1]), (sock, ip))
-    | _   ->  failwith "wrong function matched with wrong msgtype"
+    Done(JsonConvert.DeserializeObject<List<String>*List<int>>(decoded), (sock, ip))
         
 let DeserializeQ5 buffer = //list of areas and list of theft amounts
   fun (sock, ip) ->
     let decoded = Encoding.ASCII.GetString(buffer)
-    let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
-    match typeByte with                 //change these types to match the queries sent
-    | "5" ->  Done(JsonConvert.DeserializeObject<List<int>*List<String>>(decoded.[1..decoded.Length-1]), (sock, ip))
-    | _   ->  failwith "wrong function matched with wrong msgtype"
+    Done(JsonConvert.DeserializeObject<List<int>*List<String>>(decoded), (sock, ip))
 //DESERIALIZING WORKS, DONT FUCKING TOUCH IT
 let rec ReceiveQuestion1 () =
   cor{
@@ -154,8 +147,21 @@ let rec ReceiveQuestion3 () =
   cor{
     let! receivestuff = CheckReceive()
     if receivestuff then
-      let! result = ReceiveStuff()
-      let! result' = DeserializeQ3 result
+      let! result1 = ReceiveStuff()
+      do! wait_ 0.2
+      let! result2 = ReceiveStuff()
+      do! wait_ 0.2
+      let! result3 = ReceiveStuff()
+      do! wait_ 0.2
+      let! result4 = ReceiveStuff()
+      do! wait_ 0.2
+      let! result5 = ReceiveStuff()
+      do! wait_ 0.2
+      let! result6 = ReceiveStuff()
+      do! wait_ 0.2
+      let! result7 = ReceiveStuff()
+      do! wait_ 0.2
+      let! result' = DeserializeQ3 result1 result2 result3 result4 result5 result6 result7
       return result'
     else
       do! yield_
@@ -186,9 +192,15 @@ let rec ReceiveQuestion5 () =
       return! ReceiveQuestion5 ()
   }
 
+let print_ x =
+  fun s ->
+    printfn "%A" x
+    Done((), s)
+
 let SendAndReceiveQ1() =
   cor{
     do! SendFunction "1"
+    do! print_ "1"
     let! result = ReceiveQuestion1()
     return result
   }
@@ -196,6 +208,7 @@ let SendAndReceiveQ1() =
 let SendAndReceiveQ2() =
   cor{
     do! SendFunction "2"
+    do! print_ "2"
     let! result = ReceiveQuestion2()
     return result
   }
@@ -203,6 +216,7 @@ let SendAndReceiveQ2() =
 let SendAndReceiveQ3() =
   cor{
     do! SendFunction "3"
+    do! print_ "3"
     let! result = ReceiveQuestion3()
     return result
   }
@@ -210,6 +224,7 @@ let SendAndReceiveQ3() =
 let SendAndReceiveQ4() =
   cor{
     do! SendFunction "4"
+    do! print_ "4"
     let! result = ReceiveQuestion4()
     return result
   }
@@ -217,6 +232,7 @@ let SendAndReceiveQ4() =
 let SendAndReceiveQ5() =
   cor{
     do! SendFunction "5"
+    do! print_ "5"
     let! result = ReceiveQuestion5()
     return result
   }

@@ -14,7 +14,7 @@ let first_Chart (list1 : List<float*string>) =
     let myChartControl = new ChartControl(myChart, Dock=DockStyle.Fill)
     myChartControl
     //dates of thefts and trommels respectively List<string, string>
-let second_Chart (list1 : List<int*int>) =
+let second_Chart (list1 : List<string*int>) =
     let myChart = Chart.Column(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Amount of Thefts") |> Chart.WithXAxis(Title="Year")
                                                                       |> Chart.WithLegend
                                                                           ( InsideArea = false, 
