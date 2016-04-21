@@ -23,18 +23,22 @@
 
     let form = new Form(Visible = true, TopMost = true, Width = 700, Height = 500)
     let socket, ip = getsocketandip()
-    let socket', ip' = RunAll ConnectLoop() (socket, ip)
-    let result1,  = RunAll ConnectLoop() (socket, ip)
-    let result1 = Run (SendAndReceiveQ1()) (socket', ip')
-    let result2 = Run (SendAndReceiveQ2()) (socket, ip)
-    let result3 = Run (SendAndReceiveQ3()) (socket, ip)
-    let result4 = Run (SendAndReceiveQ4()) (socket, ip)
-    let result5 = Run (SendAndReceiveQ5()) (socket, ip)
-    let myChartControl1 = Visualization.first_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result1) (snd result1))
-    let myChartControl2 = Visualization.second_Chart  result2
-    let myChartControl3 = Visualization.third_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst result3) (snd result3))
-    let myChartControl4 = Visualization.fourth_Chart  (List.fold2 (fun s name year -> (name, year)::s) [] (snd result4) (fst result4))
-    let myChartControl5 = Visualization.fifth_Chart   (List.fold2 (fun s area thefts -> (thefts, area)::s) [] (fst result5) (snd result5))
+    let SendAndReceiveAll() =
+      cor{
+        do! ConnectFunction()
+        let! result1 = SendAndReceiveQ1()
+        let! result2 = SendAndReceiveQ2()
+        let! result3 = SendAndReceiveQ3()
+        let! result4 = SendAndReceiveQ4()
+        let! result5 = SendAndReceiveQ5()
+        return result1, result2, result3, result4, result5
+      }
+    let r1,r2,r3,r4,r5 = Run (SendAndReceiveAll()) (socket, ip)
+    let myChartControl1 = Visualization.first_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst r1) (snd r1))
+    let myChartControl2 = Visualization.second_Chart  r2
+    let myChartControl3 = Visualization.third_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst r3) (snd r3))
+    let myChartControl4 = Visualization.fourth_Chart  (List.fold2 (fun s name year -> (name, year)::s) [] (snd r4) (fst r4))
+    let myChartControl5 = Visualization.fifth_Chart   (List.fold2 (fun s area thefts -> (thefts, area)::s) [] (fst r5) (snd r5))
     
 
     form.Controls.Add lbl

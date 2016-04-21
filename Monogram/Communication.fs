@@ -16,7 +16,7 @@ let getsocketandip () = (BootClient()), (IPAddress.Parse "145.24.221.121")
 
 let TryConnect () =
   fun (sock:Socket, ip:IPAddress) ->
-    if sock.Poll(1000, SelectMode.SelectWrite) then
+    //if sock.Poll(1000, SelectMode.SelectWrite) then
       try
         printfn "trying to connect to serversocket..."
         sock.Connect(IPEndPoint(ip, 8888))
@@ -24,8 +24,8 @@ let TryConnect () =
       with
         | err ->  printfn "an error occured, namely: %A" err
                   Done(false, (sock, ip))
-    else
-      Done(false, (sock, ip))
+    //else
+      //Done(false, (sock, ip))
 
 let rec ConnectLoop() =
   cor{
@@ -81,16 +81,17 @@ let ReceiveStuff() =
   fun (sock:Socket, ip:IPAddress) ->
     let buffer = Array.create sock.Available (new Byte())
     let _ = sock.Receive(buffer)
-    printfn "raw data received: %A" (Encoding.ASCII.GetString(buffer))
+    printfn "raw data received the first byte is: %A" (Encoding.ASCII.GetString(buffer.[1..buffer.Length-1]))
     Done(buffer, (sock, ip))
 
 let DeserializeQ1 buffer = //list of relative safety indexes and list of areas
   fun (sock, ip) ->
     let decoded = Encoding.ASCII.GetString(buffer)
-    let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
-    match typeByte with                 //change these types to match the queries sent
-    | "1" ->  Done(JsonConvert.DeserializeObject<List<float>*List<string>>(decoded.[1..decoded.Length-1]), (sock, ip))
-    | _   ->  failwith "wrong function matched with wrong msgtype"
+    //let typeByte = Encoding.ASCII.GetString([|buffer.[0]|])
+    //match typeByte with                 //change these types to match the queries sent
+    //| "1" ->  
+    Done(JsonConvert.DeserializeObject<List<float>*List<string>>(decoded.[1..decoded.Length-1]), (sock, ip))
+    //| _   ->  failwith "wrong function matched with wrong msgtype"
 
 let DeserializeQ2 buffer = //list of dates for thefts and list of dates for trommels
   fun (sock, ip) ->

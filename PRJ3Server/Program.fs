@@ -11,5 +11,5 @@ let main args =
   let settings = CreateSettings ()
   let clientSocket, serverSocket = CreateSocket settings
   let dbConnection = AuxTypes.dbSchema.GetDataContext()
-  do ReceiveLoop() (clientSocket, serverSocket, dbConnection)
+  let _ = Run (ReceiveLoop()) (clientSocket, serverSocket, dbConnection)
   0

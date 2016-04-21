@@ -89,16 +89,16 @@ let q5 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) =
   List.fold2 (fun (counts, areas) count area -> count::counts, area::areas) ([],[]) (counts |> List.ofSeq) (areas |> List.ofSeq)
 
 let SendBackData (clientSocket:Socket) (serverSocket:Socket) dbConnection =
-  let buffer = Array.create clientSocket.Available (new Byte())
-  let _ = clientSocket.Receive(buffer)
+  let buffer = Array.create serverSocket.Available (new Byte())
+  let _ = serverSocket.Receive(buffer)
   let questiontype = Encoding.ASCII.GetString(buffer.[0..0])
   printfn "request received is for question %A" questiontype
   match questiontype with
-  | "1" -> ignore <| clientSocket.Send(Serialize 1 (q1 dbConnection))
-  | "2" -> ignore <| clientSocket.Send(Serialize 2 (q2 dbConnection))
-  | "3" -> ignore <| clientSocket.Send(Serialize 3 (q3 dbConnection))
-  | "4" -> ignore <| clientSocket.Send(Serialize 4 (q4 dbConnection))
-  | "5" -> ignore <| clientSocket.Send(Serialize 5 (q5 dbConnection))
+  | "1" ->  ignore <| serverSocket.Send(Serialize 1 (q1 dbConnection))
+  | "2" ->  ignore <| serverSocket.Send(Serialize 2 (q2 dbConnection))
+  | "3" ->  ignore <| serverSocket.Send(Serialize 3 (q3 dbConnection))
+  | "4" ->  ignore <| serverSocket.Send(Serialize 4 (q4 dbConnection))
+  | "5" ->  ignore <| serverSocket.Send(Serialize 5 (q5 dbConnection))
   | _ -> failwith "incorrect byte received"
   let _ = (clientSocket.Blocking = false)
   ()
@@ -109,10 +109,15 @@ let CreateSettings () = {LocalIP = (IPAddress.Parse "145.24.221.121"); LocalPort
 
 let CreateSocket settings = connectClient (BootProgram settings)
 
+let print_ x =
+  fun s ->
+    printfn "%A" x
+    Done((), s)
+
 let rec ReceiveLoop() =
   cor{
     let! (serverSocket : Socket), (clientSocket : Socket), dbConnection = getState()
-    if clientSocket.Available > 0 then
+    if serverSocket.Available > 0 then
       SendBackData clientSocket serverSocket dbConnection
       do! ReceiveLoop ()
       return ()
