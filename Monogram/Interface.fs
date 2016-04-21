@@ -73,14 +73,16 @@
         return_button.Show()
 
     let thirdForm () =
-        myChartControl3.Show()
-        button1.Hide()
-        button2.Hide()
-        button3.Hide()
-        button4.Hide()
-        button5.Hide()
-        //pb.Show()
-        return_button.Show()
+//        myChartControl3.Show()
+//        button1.Hide()
+//        button2.Hide()
+//        button3.Hide()
+//        button4.Hide()
+//        button5.Hide()
+//        //pb.Show()
+//        return_button.Show()
+        form.SendToBack()
+        animateMap.animateMap |> ignore
 
     let fourthForm () =
         myChartControl4.Show()
