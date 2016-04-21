@@ -81,7 +81,7 @@ let ReceiveStuff() =
   fun (sock:Socket, ip:IPAddress) ->
     let buffer = Array.create sock.Available (new Byte())
     let _ = sock.Receive(buffer)
-    printfn "raw data received is: %A" (Encoding.ASCII.GetString(buffer))
+    //ignore <| (Encoding.ASCII.GetString(buffer))
     Done(buffer, (sock, ip))
 
 let DeserializeQ1 buffer = //list of relative safety indexes and list of areas
@@ -116,7 +116,6 @@ let DeserializeQ3 a b c d e f g= //list of locations list x list y
     
 let DeserializeQ4 (buffer:Byte []) = //list of dates for the from xdate to ydate amount of thefts - List of dates which correspond to 1 theft each
   fun (sock, ip) ->
-    printfn "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  %A" buffer.Length
     let decoded = Encoding.ASCII.GetString(buffer)
     Done(JsonConvert.DeserializeObject<List<String>*List<int>>(decoded), (sock, ip))
         
@@ -154,19 +153,19 @@ let rec ReceiveQuestion3 () =
     let! receivestuff = CheckReceive()
     if receivestuff then
       let! result1 = ReceiveStuff()
-      do! wait_ 0.2
+      do! wait_ 0.21
       let! result2 = ReceiveStuff()
-      do! wait_ 0.2
+      do! wait_ 0.21
       let! result3 = ReceiveStuff()
-      do! wait_ 0.2
+      do! wait_ 0.21
       let! result4 = ReceiveStuff()
-      do! wait_ 0.2
+      do! wait_ 0.21
       let! result5 = ReceiveStuff()
-      do! wait_ 0.2
+      do! wait_ 0.21
       let! result6 = ReceiveStuff()
-      do! wait_ 0.2
+      do! wait_ 0.21
       let! result7 = ReceiveStuff()
-      do! wait_ 0.2
+      do! wait_ 0.21
       let! result' = DeserializeQ3 result1 result2 result3 result4 result5 result6 result7
       return result'
     else

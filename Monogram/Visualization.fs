@@ -29,7 +29,7 @@ let second_Chart (list1 : List<string*int>) =
                                                                       |> Chart.WithLegend
                                                                           ( InsideArea = false, 
                                                                           Alignment = StringAlignment.Center, Docking = Docking.Top)
-    let myChart2 = Chart.Column(lista', Name = "Trommels") |> Chart.WithYAxis(Title="Amount of Trommels") |> Chart.WithXAxis(Title="Month")
+    let myChart2 = Chart.Column(listb', Name = "Trommels") |> Chart.WithYAxis(Title="Amount of Trommels") |> Chart.WithXAxis(Title="Month")
                                                                       |> Chart.WithLegend
                                                                           ( InsideArea = false, 
                                                                           Alignment = StringAlignment.Center, Docking = Docking.Top)
@@ -46,7 +46,8 @@ let third_Chart (list1 : List<float*float>) = //hier even naar kijken, dit moet 
     myChartControl
     //list of thefts per year List<int, string>
 let fourth_Chart (list1 : List<int*string>) =
-    let myChart = Chart.Column(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Amount") |> Chart.WithXAxis(Title="Year") |> Chart.WithLegend
+    let list1' = List.rev (List.map (fun (x,y) -> (y,x)) list1)
+    let myChart = Chart.Column(list1', Name = "Thefts") |> Chart.WithYAxis(Title="Amount") |> Chart.WithXAxis(Title="Year") |> Chart.WithLegend
                                                                         ( InsideArea = false, 
                                                                         Alignment = StringAlignment.Center, Docking = Docking.Top)
     let custom_Chart = Chart.Combine([myChart])

@@ -77,7 +77,6 @@ let q3 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //k
       select (trommel.X_location, trommel.Y_location)
     }
   let x = Seq.fold (fun (xs, ys) (x, y) -> x::xs, y::ys) ([],[]) xylist
-  printfn "%A" (fst x).Length
   x
 
 let q2 (dbConnection:dbSchema.ServiceTypes.SimpleDataContextTypes.Project) = //werkt nog niet
