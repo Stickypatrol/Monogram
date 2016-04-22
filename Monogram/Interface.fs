@@ -82,7 +82,7 @@
 //        //pb.Show()
 //        return_button.Show()
         form.SendToBack()
-        animateMap.animateMap |> ignore
+        animateMap.animateMap() |> ignore
 
     let fourthForm () =
         myChartControl4.Show()
