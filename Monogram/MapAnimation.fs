@@ -73,7 +73,7 @@
             let Program : Coroutine<Unit, Unit> =
                 cor{
                   for data in mapdata do
-                    do! wait_ 0.1
+                    do! wait_ 0.0
                     do! yield_
                     do extract form reddot data
                   do! yield_

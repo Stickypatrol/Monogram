@@ -35,14 +35,14 @@ let second_Chart (list1 : List<string*int>) =
                                                                       |> Chart.WithLegend
                                                                           ( InsideArea = false, 
                                                                           Alignment = StringAlignment.Center, Docking = Docking.Top)
-    let custom_Chart = Chart.Combine([myChart1;myChart2])
+    let custom_Chart = Chart.Combine([myChart1;myChart2]) |> Chart.WithYAxis2(MajorTickMark = ChartTypes.TickMark(Interval = 5.0))
     let myChartControl = new ChartControl(custom_Chart, Dock=DockStyle.Fill)
     myChartControl
     //List<float, float> locations of trommels
 let third_Chart (list1 : List<float*float>) = //hier even naar kijken, dit moet een map worden
-    let myChart = Chart.Column(list1, Name = "Thefts") |> Chart.WithYAxis(Title="Test") |> Chart.WithLegend
-                                                                        ( InsideArea = false, //DIT MOET HELEMAAL VERANDERD WORDEN NAAR EEN MAP DUS MUSTAFA GA JE GANG
-                                                                        Alignment = StringAlignment.Center, Docking = Docking.Top)
+    let myChart = Chart.Column(list1, Name = "Thefts")
+                          |> Chart.WithYAxis(Title="Test")
+                          |> Chart.WithLegend( InsideArea = false, Alignment = StringAlignment.Center, Docking = Docking.Top)
     let custom_Chart = Chart.Combine([myChart;])
     let myChartControl = new ChartControl(custom_Chart, Dock=DockStyle.Fill)
     myChartControl
