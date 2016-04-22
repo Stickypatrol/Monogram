@@ -50,7 +50,7 @@
                 picture.Width <- 1920
                 picture.Height <- 1080
                 picture
-            let reddot = new Bitmap("red_dot.png")
+            let reddot = new Bitmap("Reddot.png")
             let form = new Form()
             let button = new Button()
             button.Text <- "Exit"
