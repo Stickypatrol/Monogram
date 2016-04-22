@@ -12,7 +12,7 @@ let BootClient() =
   printfn "clientsocket has been initialized"
   clientSocket//clientsocket is connected
   
-let getsocketandip () = (BootClient()), (IPAddress.Parse "145.24.221.121")
+let getsocketandip = (BootClient()), (IPAddress.Parse "145.24.221.121")
 
 let TryConnect () =
   fun (sock:Socket, ip:IPAddress) ->

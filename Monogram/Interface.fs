@@ -22,21 +22,19 @@
     let return_button = new Button(Text="<-", Top = 10, Left = 10)
 
     let form = new Form(Visible = true, TopMost = true, Width = 1600, Height = 900)
-    let socket, ip = getsocketandip()
+    let socket, ip = getsocketandip
     let SendAndReceiveAll() =
       cor{
         do! ConnectFunction()
         let! result1 = SendAndReceiveQ1()
         let! result2 = SendAndReceiveQ2()
-        let! result3 = SendAndReceiveQ3()
         let! result4 = SendAndReceiveQ4()
         let! result5 = SendAndReceiveQ5()
-        return result1, result2, result3, result4, result5
+        return result1, result2, result4, result5
       }
-    let r1,r2,r3,r4,r5 = Run (SendAndReceiveAll()) (socket, ip)
+    let r1,r2,r4,r5 = Run (SendAndReceiveAll()) (socket, ip)
     let myChartControl1 = Visualization.first_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst r1) (snd r1))
     let myChartControl2 = Visualization.second_Chart  r2
-    let myChartControl3 = Visualization.third_Chart   (List.fold2 (fun s safety area -> (safety, area)::s) [] (fst r3) (snd r3))
     let myChartControl4 = Visualization.fourth_Chart  (List.fold2 (fun s thefts year -> (thefts, year)::s) [] (snd r4) (fst r4))
     let myChartControl5 = Visualization.fifth_Chart   (List.fold2 (fun s area thefts -> (thefts, area)::s) [] (fst r5) (snd r5))
     
@@ -105,7 +103,6 @@
     let returnFunc () =
         myChartControl1.Hide()
         myChartControl2.Hide()
-        myChartControl3.Hide()
         myChartControl4.Hide()
         myChartControl5.Hide()
         button1.Show()
@@ -125,13 +122,11 @@
     
     form.Controls.Add(myChartControl1)
     form.Controls.Add(myChartControl2)
-    form.Controls.Add(myChartControl3)
     form.Controls.Add(myChartControl4)
     form.Controls.Add(myChartControl5)
 
     myChartControl1.Hide()
     myChartControl2.Hide()
-    myChartControl3.Hide()
     myChartControl4.Hide()
     myChartControl5.Hide()
     return_button.Hide()

@@ -8,9 +8,11 @@ open CoroutineMonad
 
 [<STAThread>] //amount of thefts per area List<float, string>
 let first_Chart (list1 : List<float*string>) =
-    let myChart = Chart.Column(list1, Name = "Relative Safety Index of areas") |> Chart.WithYAxis(Title="Relative Safety Index") |> Chart.WithXAxis(Title="Area") |> Chart.WithLegend
-                                                                        ( InsideArea = false, 
-                                                                        Alignment = StringAlignment.Center, Docking = Docking.Top)
+    let list1' = List.map (fun (x,y) -> y,x) list1
+    let myChart = Chart.Column(list1', Name = "Relative Safety Index of areas")
+                    |> Chart.WithYAxis(Title="Relative Safety Index")
+                    |> Chart.WithXAxis(Title="Area", LabelStyle = ChartTypes.LabelStyle(Angle = -45, Interval = 1.0))
+                    |> Chart.WithLegend( InsideArea = false, Alignment = StringAlignment.Center, Docking = Docking.Top)
     let myChartControl = new ChartControl(myChart, Dock=DockStyle.Fill)
     myChartControl
     //dates of thefts and trommels respectively List<string, string>
@@ -29,7 +31,7 @@ let second_Chart (list1 : List<string*int>) =
                                                                       |> Chart.WithLegend
                                                                           ( InsideArea = false, 
                                                                           Alignment = StringAlignment.Center, Docking = Docking.Top)
-    let myChart2 = Chart.Column(listb', Name = "Trommels") |> Chart.WithYAxis(Title="Amount of Trommels") |> Chart.WithXAxis(Title="Month")
+    let myChart2 = Chart.Column(listb', Name = "Trommels") |> Chart.WithYAxis(Title="Amount of Trommels") |> Chart.WithXAxis2(Title="Month")
                                                                       |> Chart.WithLegend
                                                                           ( InsideArea = false, 
                                                                           Alignment = StringAlignment.Center, Docking = Docking.Top)
@@ -55,9 +57,9 @@ let fourth_Chart (list1 : List<int*string>) =
     myChartControl
     //list of area and corresponding thefts List<string, int>
 let fifth_Chart (list1 : List<string*int>) =
-    let myChart = Chart.Column(list1, Name = "Total thefts by area") |> Chart.WithYAxis(Title="Total thefts") |> Chart.WithYAxis(Title="Area") |> Chart.WithLegend
-                                                                        ( InsideArea = false, 
-                                                                        Alignment = StringAlignment.Center, Docking = Docking.Top)
-    let custom_Chart = Chart.Combine([myChart])
-    let myChartControl = new ChartControl(custom_Chart, Dock=DockStyle.Fill)
+    let myChart = Chart.Column(list1, Name = "Total thefts by area")
+                              |> Chart.WithYAxis(Title="Total thefts")
+                              |> Chart.WithXAxis(MajorGrid = ChartTypes.Grid(Enabled = false), LabelStyle = ChartTypes.LabelStyle(Angle = -45, Interval = 1.0))
+                              |> Chart.WithLegend( InsideArea = false, Alignment = StringAlignment.Center, Docking = Docking.Top)
+    let myChartControl = new ChartControl(myChart, Dock=DockStyle.Fill)
     myChartControl

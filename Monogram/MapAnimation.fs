@@ -10,7 +10,7 @@
     open CoroutineMonad
     open Visualization
     open System.Windows.Forms
-    open CoroutineMonad
+    open Communication
 
     let enableDobuleBuffer (control : Control) =
       let controlType = control.GetType()
@@ -26,7 +26,13 @@
       red_dot.BackColor <- Color.Transparent
       red_dot
 
-    let dummydate = [(51.9229316711426, 4.46130990982056);(51.9220695495605, 4.48883008956909);(51.9263496398926, 4.47619009017944);(51.9297218322754, 4.47138023376465);(51.9301986694336, 4.47891998291016)]
+    let getData =
+      cor{
+        let! result = SendAndReceiveQ3()
+        return result
+      }
+    let x = (Run getData (Communication.getsocketandip))
+    let mapdata = List.fold2 (fun s x y -> s@[x,y]) [] (fst x) (snd x)
     let pixelY x = ((x - 51.984986) / (51.83827 - 51.984986)) * (759.0 - 0.0)
     let pixelX x = ((x - 4.297714) / (4.710388 - 4.297714)) * (1329.0 - 0.0)
     let pixelY2 x = ((x - 51.973189) / (51.859710 - 51.973189)) * (1080.0 - 0.0)
@@ -62,14 +68,24 @@
             form.Controls.Add button
             button.BringToFront()
     
-            let updateLoop =
+            
+            
+            let Program : Coroutine<Unit, Unit> =
+                cor{
+                  for data in mapdata do
+                    do! wait_ 0.1
+                    do! yield_
+                    do extract form reddot data
+                  do! yield_
+                }
+                |> repeat_
+            let updateLoop() =
                 async {
-                    while true do
-                        for data in dummydate do
-                            extract form reddot data
-                            do! Async.Sleep(1000)
-                        do! Async.Sleep(16) }
-
-            Async.StartImmediate updateLoop
+                  let mutable res = Program
+                  while true do
+                    do! Async.Sleep(1)
+                    res <- fst(costep (res ()))
+                }
+            Async.StartImmediate((updateLoop()))
             form.ShowDialog()
         funcA ()
